@@ -1,0 +1,14 @@
+Name: social.rpc
+ListenOn: 127.0.0.1:10001
+Etcd:
+  Hosts:
+    - 127.0.0.1:3379
+  Key: social.rpc
+
+Mysql:
+  DataSource: root:IM-CHAT@tcp(127.0.0.1:13306)/IM-CHAT?charset=utf8mb4&parseTime=true
+
+Cache:
+  - Host: 127.0.0.1:16379
+    Type: node
+    Pass: IM-CHAT

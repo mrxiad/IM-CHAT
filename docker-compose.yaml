@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  etcd:
+    image: bitnami/etcd:latest  # 使用最新版本
+    container_name: etcd
+    ports:
+      - "3379:2379"
+      - "3380:2380"
+    environment:
+      - ETCD_ENABLE_V2=true
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_NAME=etcd
+    volumes:
+      - ./components/etcd/data:/bitnami/etcd/data
+      - ./components/etcd/logs:/bitnami/etcd/logs
+    networks:
+      - IM-CHAT
+
+  redis:
+    image: redis:alpine  # 使用最新的 Alpine 版本
+    ports:
+      - "16379:6379"
+    container_name: redis
+    volumes:
+      - ./components/redis/data:/data
+      - ./components/redis/config/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass IM-CHAT --appendonly yes
+    environment:
+      - TZ=Asia/Shanghai
+    restart: always
+    networks:
+      - IM-CHAT
+
+  mysql:
+    image: mysql:latest  # 使用最新版本
+    ports:
+      - "13306:3306"
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - TZ=Asia/Shanghai
+    # volumes:
+      - ./components/mysql/data:/var/lib/mysql
+      - ./components/mysql/my.cnf:/etc/mysql/my.cnf
+    restart: always
+    networks:
+      - IM-CHAT
+
+networks:
+  IM-CHAT:
+    driver: bridge
